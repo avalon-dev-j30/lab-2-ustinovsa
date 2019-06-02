@@ -49,16 +49,13 @@ public class ProductCode {
      * содержащего все поля таблицы PRODUCT_CODE базы данных Sample.
      */
     private ProductCode(ResultSet set) throws SQLException {
-
-        if (set != null) {
             while (set.next()) {
                 code = set.getString("prod_code");
-                discountCode = set.getString("disc_code").charAt(0);
+                discountCode = set.getString("discount_code").charAt(0);
                 description = set.getString("description");
             }
         }
-    }
-
+    
     /**
      * Возвращает код товара
      *
@@ -148,9 +145,9 @@ public class ProductCode {
             return false;
         }
         final ProductCode other = (ProductCode) obj;
-        return Objects.equals(this.code, other.code)
-                & Objects.equals(this.discountCode, other.discountCode)
-                & Objects.equals(this.description, other.description);
+        return Objects.equals(this.code, other.code);
+                /*& Objects.equals(this.discountCode, other.discountCode)
+                & Objects.equals(this.description, other.description);*/
 
     }
 
@@ -222,12 +219,13 @@ public class ProductCode {
      *
      * @param connection действительное соединение с базой данных
      * @return Запрос в виде объекта класса {@link PreparedStatement}
+     * @throws java.sql.SQLException
      */
     public static PreparedStatement getUpdateQuery(Connection connection) throws SQLException {
 
         if (connection != null) {
-            String updateQuery = "UPDATE APP.product_code"
-                    + "SET prod_code = ?, discount_code = ?, description = ? "
+            String updateQuery = "UPDATE APP.product_code "
+                    + "SET discount_code = ?, description = ? "
                     + "WHERE prod_code = ?";
             return connection.prepareStatement(updateQuery);
         } else {
@@ -241,13 +239,13 @@ public class ProductCode {
      * базы данных Sample
      *
      * @param connection действительное соединение с базой данных
+     * @throws java.sql.SQLException
      */
-    private void update(Connection connection) throws SQLException {
+    public void update(Connection connection) throws SQLException {
         try ( PreparedStatement ps = getUpdateQuery(connection)) {
-            ps.setString(1, code);
-            ps.setString(2, Character.toString(discountCode));
-            ps.setString(3, description);
-            ps.setString(4, code);
+            ps.setString(1, Character.toString(discountCode));
+            ps.setString(2, description);
+            ps.setString(3, code);
             ps.execute();
         }
     }
@@ -265,13 +263,7 @@ public class ProductCode {
         Collection<ProductCode> productList = new HashSet<>();
         if (set != null) {
             while (set.next()) {
-                String code = set.getString("prod_code");
-                char discountCode = set.getString("discount_code").charAt(0);
-                String description = set.getString("description");
-                productList.add(new ProductCode(
-                        code,
-                        discountCode,
-                        description));
+                productList.add(new ProductCode(set));
             }
         }
         return productList;
@@ -294,10 +286,8 @@ public class ProductCode {
             for (ProductCode p : productList) {
                 if (this.equals(p)) {
                     update(connection);
-                    return;
                 } else {
                     insert(connection);
-                    return;
                 }
             }
 

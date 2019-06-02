@@ -34,10 +34,17 @@ public class Main {
             ProductCode code = new ProductCode("MO", 'N', "Movies");
             code.save(connection);
             printAllCodes(connection);
-
+            
+            code.setDescription("Test");
+            code.setDiscountCode('T');
+            code.save(connection);
+            printAllCodes(connection);
+            
             code.setCode("MV");
             code.save(connection);
             printAllCodes(connection);
+            
+            
         }
         /*
          * TODO #14 Средствами отладчика проверьте корректность работы программы
