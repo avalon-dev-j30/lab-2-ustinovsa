@@ -2,6 +2,7 @@ package ru.avalon.java.j30.labs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.SecureRandom;
 import java.sql.*;
 import java.sql.DriverManager;
 import java.util.*;
@@ -32,6 +33,9 @@ public class Main {
 
         try ( Connection connection = getConnection()) {
             ProductCode code = new ProductCode("MO", 'N', "Movies");
+            Collection<ProductCode> pcl = new HashSet<>();
+            pcl = code.all(connection);
+            
             code.save(connection);
             printAllCodes(connection);
             

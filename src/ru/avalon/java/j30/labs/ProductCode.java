@@ -49,13 +49,11 @@ public class ProductCode {
      * содержащего все поля таблицы PRODUCT_CODE базы данных Sample.
      */
     private ProductCode(ResultSet set) throws SQLException {
-            while (set.next()) {
-                code = set.getString("prod_code");
-                discountCode = set.getString("discount_code").charAt(0);
-                description = set.getString("description");
-            }
-        }
-    
+        code = set.getString("prod_code");
+        discountCode = set.getString("discount_code").charAt(0);
+        description = set.getString("description");
+    }
+
     /**
      * Возвращает код товара
      *
@@ -124,7 +122,8 @@ public class ProductCode {
     @Override
     public int hashCode() {
 
-        return code.hashCode();
+        return code.hashCode() + discountCode + description.hashCode();
+
     }
 
     /**
@@ -137,7 +136,6 @@ public class ProductCode {
      */
     @Override
     public boolean equals(Object obj) {
-
         if (this == obj) {
             return true;
         }
@@ -145,10 +143,7 @@ public class ProductCode {
             return false;
         }
         final ProductCode other = (ProductCode) obj;
-        return Objects.equals(this.code, other.code);
-                /*& Objects.equals(this.discountCode, other.discountCode)
-                & Objects.equals(this.description, other.description);*/
-
+        return Objects.equals(this, other);
     }
 
     /**
@@ -261,10 +256,8 @@ public class ProductCode {
      */
     public static Collection<ProductCode> convert(ResultSet set) throws SQLException {
         Collection<ProductCode> productList = new HashSet<>();
-        if (set != null) {
-            while (set.next()) {
-                productList.add(new ProductCode(set));
-            }
+        while (set.next()) {
+            productList.add(new ProductCode(set));
         }
         return productList;
 
